@@ -1,0 +1,614 @@
+{
+  "info": {
+    "name": "Customer & Entity Management API",
+    "_postman_id": "ce-api-collection-v1",
+    "description": "Customer and Entity Management Service – All endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8081", "type": "string" },
+    { "key": "customerId", "value": "", "type": "string" },
+    { "key": "contactId", "value": "", "type": "string" },
+    { "key": "docId", "value": "", "type": "string" },
+    { "key": "entityId", "value": "", "type": "string" },
+    { "key": "addressId", "value": "", "type": "string" },
+    { "key": "entityDocId", "value": "", "type": "string" },
+    { "key": "linkId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1 – Customer Master",
+      "item": [
+        {
+          "name": "POST Onboard Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers", "host": ["{{baseUrl}}"], "path": ["v1", "customers"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerType\": \"INDIVIDUAL\",\n  \"title\": \"Mr\",\n  \"firstName\": \"James\",\n  \"lastName\": \"Hargreaves\",\n  \"fullName\": \"James Hargreaves\",\n  \"dateOfBirth\": \"1985-03-15\",\n  \"nationality\": \"GBR\",\n  \"countryOfBirth\": \"GBR\",\n  \"occupation\": \"Software Engineer\",\n  \"employerName\": \"TechCorp Ltd\",\n  \"customerSegment\": \"MASS_AFFLUENT\",\n  \"onboardingChannel\": \"BRANCH\",\n  \"onboardingBranch\": \"BR001\",\n  \"relationshipManagerId\": \"rm-001\",\n  \"createdBy\": \"system\",\n  \"contact\": {\n    \"contactType\": \"RESIDENTIAL\",\n    \"addressLine1\": \"10 Downing Street\",\n    \"city\": \"London\",\n    \"postalCode\": \"SW1A 2AA\",\n    \"countryCode\": \"GBR\",\n    \"mobile\": \"+447911123456\",\n    \"emailPrimary\": \"james.hargreaves@example.com\",\n    \"isPrimary\": true,\n    \"createdBy\": \"system\"\n  },\n  \"document\": {\n    \"docType\": \"PASSPORT\",\n    \"docNumber\": \"GB1234567\",\n    \"issuingCountry\": \"GBR\",\n    \"issuingAuthority\": \"HM Passport Office\",\n    \"issueDate\": \"2018-06-01\",\n    \"expiryDate\": \"2028-05-31\",\n    \"isMandatory\": true,\n    \"createdBy\": \"system\"\n  },\n  \"risk\": {\n    \"amlRiskRating\": \"LOW\",\n    \"pepStatus\": \"NOT_PEP\",\n    \"sanctionsHit\": false,\n    \"fatcaStatus\": \"NON_US\",\n    \"crsStatus\": \"RESIDENT\",\n    \"taxResidencyCountry\": \"GBR\",\n    \"createdBy\": \"system\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('customerId', resp.data.customerId);",
+                  "    console.log('customerId saved:', resp.data.customerId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Full Customer",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}"] }
+          }
+        },
+        {
+          "name": "GET Customer Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/summary", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "summary"] }
+          }
+        },
+        {
+          "name": "PATCH Customer",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"occupation\": \"Senior Software Engineer\",\n  \"customerSegment\": \"PRIVATE\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT Customer Status (Activate)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/v1/customers/{{customerId}}/status?status=ACTIVE",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "customers", "{{customerId}}", "status"],
+              "query": [{ "key": "status", "value": "ACTIVE" }]
+            }
+          }
+        },
+        {
+          "name": "GET List Customers",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "customers"]
+            }
+          }
+        },
+        {
+          "name": "DELETE Close Customer",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 – Customer Contacts",
+      "item": [
+        {
+          "name": "POST Add Contact",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/contacts", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "contacts"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"contactType\": \"MAILING\",\n  \"addressLine1\": \"20 Baker Street\",\n  \"city\": \"London\",\n  \"postalCode\": \"NW1 6XE\",\n  \"countryCode\": \"GBR\",\n  \"emailPrimary\": \"james.work@example.com\",\n  \"isPrimary\": false,\n  \"createdBy\": \"system\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('contactId', resp.data.contactId);",
+                  "    console.log('contactId saved:', resp.data.contactId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Contacts",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/contacts", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "contacts"] }
+          }
+        },
+        {
+          "name": "PATCH Update Contact",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/contacts/{{contactId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "contacts", "{{contactId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mobile\": \"+447911999888\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE Expire Contact",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/contacts/{{contactId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "contacts", "{{contactId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 – Customer Documents",
+      "item": [
+        {
+          "name": "POST Add Document",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/documents", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "documents"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docType\": \"DRIVING_LICENCE\",\n  \"docNumber\": \"HARGR805103JW9LN\",\n  \"issuingCountry\": \"GBR\",\n  \"issuingAuthority\": \"DVLA\",\n  \"issueDate\": \"2015-01-01\",\n  \"expiryDate\": \"2030-03-15\",\n  \"isMandatory\": false,\n  \"createdBy\": \"system\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('docId', resp.data.docId);",
+                  "    console.log('docId saved:', resp.data.docId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Documents",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/documents", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "documents"] }
+          }
+        },
+        {
+          "name": "PATCH Update Document",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/documents/{{docId}}", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "documents", "{{docId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docStatus\": \"VERIFIED\",\n  \"verifiedBy\": \"ops-user-01\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 – Customer Risk",
+      "item": [
+        {
+          "name": "GET Risk Profile",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/risk", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "risk"] }
+          }
+        },
+        {
+          "name": "PUT Replace Risk Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/risk", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "risk"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amlRiskRating\": \"MEDIUM\",\n  \"pepStatus\": \"NOT_PEP\",\n  \"sanctionsHit\": false,\n  \"fatcaStatus\": \"NON_US\",\n  \"crsStatus\": \"RESIDENT\",\n  \"taxResidencyCountry\": \"GBR\",\n  \"nextReviewDate\": \"2027-04-01\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH Risk Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/customers/{{customerId}}/risk", "host": ["{{baseUrl}}"], "path": ["v1", "customers", "{{customerId}}", "risk"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amlRiskRating\": \"LOW\",\n  \"updatedBy\": \"system\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 – Entity Master",
+      "item": [
+        {
+          "name": "POST Onboard Entity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities", "host": ["{{baseUrl}}"], "path": ["v1", "entities"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"entityName\": \"Acme Corporation Ltd\",\n  \"shortName\": \"Acme Corp\",\n  \"entityType\": \"PRIVATE_LIMITED\",\n  \"legalForm\": \"LTD\",\n  \"registrationNumber\": \"12345678\",\n  \"registrationCountry\": \"GBR\",\n  \"registrationDate\": \"2005-06-15\",\n  \"incorporationDate\": \"2005-06-15\",\n  \"industryCode\": \"TECH\",\n  \"sicCode\": \"6200\",\n  \"onboardingBranch\": \"BR001\",\n  \"onboardingChannel\": \"BRANCH\",\n  \"relationshipManagerId\": \"rm-001\",\n  \"createdBy\": \"system\",\n  \"address\": {\n    \"addressType\": \"REGISTERED\",\n    \"addressLine1\": \"1 Acme House\",\n    \"addressLine2\": \"City Road\",\n    \"city\": \"London\",\n    \"postalCode\": \"EC1V 2PX\",\n    \"countryCode\": \"GBR\",\n    \"isPrimary\": true,\n    \"createdBy\": \"system\"\n  },\n  \"document\": {\n    \"docType\": \"CERTIFICATE_OF_INCORPORATION\",\n    \"docNumber\": \"12345678\",\n    \"docName\": \"Certificate of Incorporation\",\n    \"issuingAuthority\": \"Companies House\",\n    \"issuingCountry\": \"GBR\",\n    \"issueDate\": \"2005-06-15\",\n    \"isMandatory\": true,\n    \"createdBy\": \"system\"\n  },\n  \"financials\": {\n    \"financialYear\": \"2024\",\n    \"annualTurnover\": 5000000.00,\n    \"turnoverCurrency\": \"GBP\",\n    \"netWorth\": 2500000.00,\n    \"totalAssets\": 8000000.00,\n    \"totalLiabilities\": 5500000.00,\n    \"employeeCount\": 50,\n    \"auditorName\": \"Big Four Auditors LLP\",\n    \"creditRating\": \"BBB\",\n    \"createdBy\": \"system\"\n  },\n  \"compliance\": {\n    \"amlRiskRating\": \"LOW\",\n    \"sanctionsHit\": false,\n    \"fatcaClassification\": \"ACTIVE_NFFE\",\n    \"crsClassification\": \"ACTIVE_NFFE\",\n    \"vatNumber\": \"GB123456789\",\n    \"pepLinked\": false,\n    \"nextReviewDate\": \"2027-04-01\",\n    \"createdBy\": \"system\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('entityId', resp.data.entityId);",
+                  "    console.log('entityId saved:', resp.data.entityId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET Full Entity",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}"] }
+          }
+        },
+        {
+          "name": "GET Entity Summary",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/summary", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "summary"] }
+          }
+        },
+        {
+          "name": "PATCH Entity",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortName\": \"Acme\",\n  \"industryCode\": \"FINTECH\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT Entity Status (Activate)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/v1/entities/{{entityId}}/status?status=ACTIVE",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "entities", "{{entityId}}", "status"],
+              "query": [{ "key": "status", "value": "ACTIVE" }]
+            }
+          }
+        },
+        {
+          "name": "GET List Entities",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities", "host": ["{{baseUrl}}"], "path": ["v1", "entities"] }
+          }
+        },
+        {
+          "name": "GET Group Structure",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/group-structure", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "group-structure"] }
+          }
+        },
+        {
+          "name": "DELETE Close Entity",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6 – Entity Addresses",
+      "item": [
+        {
+          "name": "POST Add Address",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/addresses", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "addresses"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressType\": \"OPERATING\",\n  \"addressLine1\": \"5 Tech Park\",\n  \"addressLine2\": \"Silicon Way\",\n  \"city\": \"Manchester\",\n  \"postalCode\": \"M1 1AE\",\n  \"countryCode\": \"GBR\",\n  \"isPrimary\": false,\n  \"createdBy\": \"system\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('addressId', resp.data.addressId);",
+                  "    console.log('addressId saved:', resp.data.addressId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Addresses",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/addresses", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "addresses"] }
+          }
+        },
+        {
+          "name": "PATCH Update Address",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/addresses/{{addressId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "addresses", "{{addressId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressLine2\": \"Innovation Way\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE Expire Address",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/addresses/{{addressId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "addresses", "{{addressId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7 – Entity Documents",
+      "item": [
+        {
+          "name": "POST Add Entity Document",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "documents"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docType\": \"MEMORANDUM_OF_ASSOCIATION\",\n  \"docNumber\": \"MOA-12345678\",\n  \"docName\": \"Memorandum of Association\",\n  \"issuingAuthority\": \"Companies House\",\n  \"issuingCountry\": \"GBR\",\n  \"issueDate\": \"2005-06-15\",\n  \"isMandatory\": true,\n  \"createdBy\": \"system\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('entityDocId', resp.data.docId);",
+                  "    console.log('entityDocId saved:', resp.data.docId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Entity Documents",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "documents"] }
+          }
+        },
+        {
+          "name": "PATCH Update Entity Document",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents/{{entityDocId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "documents", "{{entityDocId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"docName\": \"Memorandum of Association – Updated\",\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PUT Verify Entity Document",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents/{{entityDocId}}/verify?verifiedBy=ops-user-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "entities", "{{entityId}}", "documents", "{{entityDocId}}", "verify"],
+              "query": [{ "key": "verifiedBy", "value": "ops-user-01" }]
+            }
+          }
+        },
+        {
+          "name": "PUT Reject Entity Document",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents/{{entityDocId}}/reject?reason=Document+illegible",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "entities", "{{entityId}}", "documents", "{{entityDocId}}", "reject"],
+              "query": [{ "key": "reason", "value": "Document illegible" }]
+            }
+          }
+        },
+        {
+          "name": "DELETE Revoke Entity Document",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/documents/{{entityDocId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "documents", "{{entityDocId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8 – Entity Financials",
+      "item": [
+        {
+          "name": "GET Financials",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/financials", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "financials"] }
+          }
+        },
+        {
+          "name": "PUT Upsert Financials",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/financials", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "financials"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"financialYear\": \"2025\",\n  \"annualTurnover\": 6500000.00,\n  \"turnoverCurrency\": \"GBP\",\n  \"netWorth\": 3200000.00,\n  \"totalAssets\": 9500000.00,\n  \"totalLiabilities\": 6300000.00,\n  \"employeeCount\": 65,\n  \"auditorName\": \"Big Four Auditors LLP\",\n  \"creditRating\": \"BBB+\",\n  \"creditRatingAgency\": \"S&P\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH Financials",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/financials", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "financials"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"financialYear\": \"2025\",\n  \"employeeCount\": 70,\n  \"updatedBy\": \"system\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "9 – Entity Compliance",
+      "item": [
+        {
+          "name": "GET Compliance",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/compliance", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "compliance"] }
+          }
+        },
+        {
+          "name": "PUT Replace Compliance",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/compliance", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "compliance"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amlRiskRating\": \"LOW\",\n  \"sanctionsHit\": false,\n  \"fatcaClassification\": \"ACTIVE_NFFE\",\n  \"crsClassification\": \"ACTIVE_NFFE\",\n  \"vatNumber\": \"GB123456789\",\n  \"leiCode\": \"529900T8BM49AURSDO55\",\n  \"pepLinked\": false,\n  \"nextReviewDate\": \"2028-04-01\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "PATCH Compliance",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/compliance", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "compliance"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amlRiskRating\": \"MEDIUM\",\n  \"nextReviewDate\": \"2027-01-15\",\n  \"updatedBy\": \"system\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 – Customer-Entity Links",
+      "item": [
+        {
+          "name": "POST Link Customer to Entity",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/customers", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "customers"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customerId}}\",\n  \"roleType\": \"DIRECTOR\",\n  \"ownershipPercentage\": 51.00,\n  \"isUbo\": true,\n  \"isAuthorisedSignatory\": true,\n  \"isDirector\": true,\n  \"isPrimaryContact\": true,\n  \"effectiveFrom\": \"2024-01-01\",\n  \"createdBy\": \"system\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var resp = pm.response.json();",
+                  "    pm.collectionVariables.set('linkId', resp.data.linkId);",
+                  "    console.log('linkId saved:', resp.data.linkId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "GET List Linked Customers",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/customers", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "customers"] }
+          }
+        },
+        {
+          "name": "PATCH Update Link",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "customers", "{{customerId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownershipPercentage\": 60.00,\n  \"updatedBy\": \"system\",\n  \"createdBy\": \"system\"\n}"
+            }
+          }
+        },
+        {
+          "name": "DELETE Unlink Customer",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/v1/entities/{{entityId}}/customers/{{customerId}}", "host": ["{{baseUrl}}"], "path": ["v1", "entities", "{{entityId}}", "customers", "{{customerId}}"] }
+          }
+        }
+      ]
+    }
+  ]
+}
